@@ -1,0 +1,105 @@
+<?xml version="1.0"?>
+<!--
+    ====================================================================== 
+    Ant Build for the Analytics Selenium suite for webapp		    ======================================================================
+-->
+<project name="Selenium_webapp" default="build" basedir=".">
+	<description>analytics Webapp Selenium</description>
+
+	<property file="${basedir}/build.properties"/>
+	<property name = "full-compile" value="true" />
+
+
+        <path id="classpath_jars">
+	<fileset dir = "${basedir}/lib">
+        <include name = "**/*.jar" />
+	 </fileset>
+	</path>
+	
+	<path id="classpath_tests">
+	<fileset dir = "${basedir}/bin">
+        <include name = "**/*.class" />
+	 </fileset>
+	</path>
+	
+
+	<taskdef name = "testng" classpathref="classpath_jars" 
+	classname = "org.testng.TestNGAntTask"/>
+   	
+
+  
+<target name = "clean" >
+      <delete verbose="${full-compile}">
+         <fileset dir = "${basedir}/bin" includes="**/*.class" />
+      </delete>
+   </target>
+   
+   <target name = "compile" depends="clean">
+      <javac debug="true" srcdir = "${basedir}/analytics" destdir = "${basedir}/bin" verbose="${full-compile}">
+         <classpath refid = "classpath_jars"/>
+      </javac>
+   </target>
+ <!--  
+   <target name = "test_run" depends="compile">
+   <fileset id="classes_dir" dir = "${basedir}/bin">
+        <include name = "**/*.class" />
+        </fileset>
+        <testng mode="mixed"  classpathref="classpath_jars"
+        outputDir="${basedir}/Reports"
+       workingDIr="${basedir}"
+	      verbose="5"
+         classfilesetref="classes_dir" > 
+        
+           <xmlfileset dir = "${basedir}" includes="TestNG_P6.xml"/> 
+      </testng>
+    </target>
+   -->
+     <target name = "test_run" depends="compile">
+         <testng mode="mixed"  outputDir="${basedir}/Reports"  verbose="5" classpath="${test.classpath}:${basedir}/bin">
+     
+           <xmlfileset dir = "${basedir}" includes="testNG.xml"/> 
+      </testng>
+    </target>
+	
+	<target name = "test_run_trad" depends="compile">
+	         <testng mode="mixed"  outputDir="${basedir}/Reports"  verbose="5" classpath="${test.classpath}:${basedir}/bin">
+	     
+	           <xmlfileset dir = "${basedir}" includes="testNG_trad.xml"/> 
+	      </testng>
+	    </target>
+    
+    <target name="init" depends="set_classpath"/>
+    
+    <target name="set_classpath">
+        <path id="jars">
+          <fileset dir = "${basedir}/lib" includes="**/*.jar"/>
+        </path>
+        <pathconvert pathsep=":" property="test.classpath" refid="jars"/>
+    
+    </target>
+   <!--
+   <target name = "test" depends="compile">
+      <testng outputdir = "${basedir}/bin" classpathref="classpath_jars"> 
+         <xmlfileset dir = "${basedir}" includes="testNG.xml"/> 
+      </testng>
+   </target>
+   
+   <target name = "test" depends="compile">
+      <testng outputdir = "${basedir}/bin" classpathref="classpath_jars"> 
+         <classfileset dir = "${basedir}/bin" includes="**/*.class"/> 
+      </testng>
+   </target>
+   -->
+   <target name = "test" depends="compile">
+   <fileset id="classes_dir" dir = "${basedir}/bin">
+        <include name = "**/*.*" />
+        </fileset>
+        
+        <testng mode="testng" outputdir = "${basedir}/Reports" classpathref="classpath_jars;classes_dir" classfilesetref="classes_dir"> 
+         <classfileset dir = "${basedir}/bin" includes="**/*.class"/> 
+      </testng>
+        
+   </target>
+   
+	
+</project>
